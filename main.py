@@ -1,3 +1,4 @@
+import re
 from models import Book
 from storage import Storage
 from stats import Stats
@@ -39,8 +40,16 @@ def main():
 
 def add_book(storage: Storage):
     print("\n--- Добавление книги ---")
+
     title = input("Название: ").strip()
+    if not title:
+        print("Название не может быть пустым.")
+        return
+
     author = input("Автор: ").strip()
+    if not author:
+        print("Автор не может быть пустым.")
+        return
 
     while True:
         rating_input = input("Оценка (1-5): ").strip()
@@ -49,7 +58,11 @@ def add_book(storage: Storage):
             break
         print("Введите целое число от 1 до 5.")
 
-    date_read = input("Дата прочтения (ГГГГ-ММ-ДД): ").strip()
+    while True:
+        date_read = input("Дата прочтения (ГГГГ-ММ-ДД): ").strip()
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", date_read):
+            break
+        print("Введите дату в формате ГГГГ-ММ-ДД (например, 2024-05-15).")
 
     book = Book(title=title, author=author, rating=rating, date_read=date_read)
     if storage.add_book(book):
@@ -70,6 +83,9 @@ def show_all_books(storage: Storage):
 
 def delete_book(storage: Storage):
     title = input("\nНазвание книги для удаления: ").strip()
+    if not title:
+        print("Название не может быть пустым.")
+        return
     if storage.delete_book(title):
         print(f"Книга '{title}' удалена.")
     else:
